@@ -1,11 +1,20 @@
 const express = require('express');
+const { connectDb } = require('../helpers/db')
 const app = express();
-const PORT = process.env.PORT;
+const { PORT, db } = require('../configuration/index');
+
+const startServer = () => {
+   app.listen(PORT, () => {
+      console.log(`Started api server on port ${PORT}`);
+      console.log(`Our db ${db}`);
+   });
+};
 
 app.get('/test', (req, res) => {
    res.send('Our api server is working correctly');
 });
 
-app.listen(PORT, () => {
-   console.log(`Started api server on port ${PORT}`);
-});
+connectDb()
+   .on('error', console.log)
+   .on('disconnect', connectDb)
+   .once('open', startServer);
