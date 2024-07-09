@@ -1,22 +1,58 @@
 version: '3'
 
 services:
+  frontend:
+    build: ./frontend
+    container_name: mern-docker-with-test-frontend
+    command: npm run start
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./frontend:/app
+
   api:
     build: ./api
+    container_name: mern-docker-with-test-api
     command: npm run start
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
-      - PORT=3000
-      - MONGO_URL=mongo://api_db:27017/api
+      - PORT=3001
+      - MONGO_URL=mongodb://api_db:27017/api
+      - JWR_SECRET=SERRET_KEY
     depends_on:
       - api_db
 
+  auth:
+    build: ./auth
+    container_name: mern-docker-with-test-auth
+    command: npm run start
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGO_URL=mongodb://auth_db:27017/auth
+      - JWR_SECRET=SECRET_KEY
+    depends_on:
+      - auth_db
+
   api_db:
     image: mongo:latest
+    container_name: mern-docker-with-test-api-db
     volumes:
-      - mongo_api:/data/db
+      - mongodb_api:/data/db
+
+  auth_db:
+    image: mongo:latest
+    container_name: mern-docker-with-test-auth-db
+    volumes:
+      - mongodb_auth:/data/db
 
 volumes:
-  mongo_api:
+  mongodb_api:
+  mongodb_auth:
