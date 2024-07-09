@@ -1,7 +1,11 @@
 const express = require('express');
-const { connectDb } = require('../helpers/db')
+const { connectDb } = require('./helpers/db');
+const { PORT, db } = require('./configuration/index');
+const catRoutes = require('./routes/catRoutes');
 const app = express();
-const { PORT, db } = require('../configuration');
+
+app.use(express.json());
+app.use('/api', catRoutes);
 
 const startServer = () => {
    app.listen(PORT, () => {
@@ -10,11 +14,7 @@ const startServer = () => {
    });
 };
 
-app.get('/test', (req, res) => {
-   res.send('Our api server is working correctly');
-});
-
 connectDb()
-   .on('error', console.log)
-   .on('disconnect', connectDb)
-   .once('open', startServer);
+    .on('error', console.log)
+    .on('disconnect', connectDb)
+    .once('open', startServer);
