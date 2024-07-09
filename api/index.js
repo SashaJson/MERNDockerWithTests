@@ -1,7 +1,7 @@
 const express = require('express');
 const { connectDb } = require('../helpers/db')
 const app = express();
-const { PORT, db } = require('../configuration/index');
+const { PORT, db } = require('../configuration');
 
 const startServer = () => {
    app.listen(PORT, () => {
