@@ -2,16 +2,14 @@ version: '3'
 
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile:  Dockerfile.prod
     container_name: mern-docker-with-test-frontend
-    command: npm run start
-    ports:
-      - "3000:3000"
+    command: serve -s build -l 3000
     restart: unless-stopped
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./frontend:/app
+    networks:
+      - mern-docker-with-tests-network
 
   api:
     build: ./api
@@ -23,9 +21,11 @@ services:
     environment:
       - PORT=3001
       - MONGO_URL=mongodb://api_db:27017/api
-      - JWR_SECRET=SERRET_KEY
+      - JWR_SECRET=SECRET_KEY
     depends_on:
       - api_db
+    networks:
+      - mern-docker-with-tests-network
 
   auth:
     build: ./auth
@@ -40,19 +40,41 @@ services:
       - JWR_SECRET=SECRET_KEY
     depends_on:
       - auth_db
+    networks:
+      - mern-docker-with-tests-network
 
   api_db:
     image: mongo:latest
     container_name: mern-docker-with-test-api-db
     volumes:
       - mongodb_api:/data/db
+    networks:
+      - mern-docker-with-tests-network
 
   auth_db:
     image: mongo:latest
     container_name: mern-docker-with-test-auth-db
     volumes:
       - mongodb_auth:/data/db
+    networks:
+      - mern-docker-with-tests-network
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: mern-docker-with-test-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - frontend
+    networks:
+      - mern-docker-with-tests-network
 
 volumes:
   mongodb_api:
   mongodb_auth:
+
+networks:
+  mern-docker-with-tests-network:
+    driver: bridge

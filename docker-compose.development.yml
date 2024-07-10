@@ -2,13 +2,25 @@ version: '3'
 
 services:
   frontend:
-    command: npm run start
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: sh -c "npm install && npm run start"
     stdin_open: true
     tty: true
     volumes:
-      - ./frontend:/app
+      - ./frontend/src:/app/src
 
   api:
-    command: npm run dev
+    command: sh -c "npm install && npm run dev"
     volumes:
       - ./api:/app
+
+  auth:
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - ./auth:/app
+
+  nginx:
+    volumes:
+      - ./nginx/nginx.conf.dev:/etc/nginx/conf.d/nginx.conf
