@@ -1,0 +1,16 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "singAndVerifyUseJose.js",
+  "scripts": {
+    "start": "node singAndVerifyUseJose.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "jose": "^5.6.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
